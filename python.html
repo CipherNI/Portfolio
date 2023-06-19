@@ -3,14 +3,17 @@
 <head>
     <title>Hello, World!</title>
     <script src="https://cdn.jsdelivr.net/npm/brython@3.10.2/src/brython.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/brython@3.10.2/src/brython_stdlib.js"></script>
 </head>
-<body>
+<body onload="brython()">
     <h1 id="output"></h1>
 
     <script type="text/python">
         # Python code executed by Brython
+        from browser import document
+
         message = "Hello, World!"
-        document.getElementById("output").textContent = message
+        document["output"].text = message
     </script>
 </body>
 </html>

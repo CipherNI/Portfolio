@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stylized Hangman Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #007BFF;
+        }
+
+        input[type="text"] {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #wordDisplay {
+            font-size: 24px;
+            letter-spacing: 2px;
+            margin: 20px 0;
+        }
+
+        #wrongGuesses {
+            color: #FF0000;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Hangman Game</h1>
+    <div id="setup">
+        <p>Enter a word for someone else to guess or leave it blank to use a random word:</p>
+        <input id="customWord" type="text" placeholder="Enter custom word (optional)" />
+        <button onclick="startGame()">Start Game</button>
+    </div>
+    <div id="game" style="display:none;">
+        <p>Guess the word by typing a letter in the box below:</p>
+        <input id="guess" type="text" maxlength="1" oninput="this.value = this.value.toLowerCase()" />
+        <button onclick="makeGuess()">Guess!</button>
+        <p id="wordDisplay"></p>
+        <p>Wrong guesses: <span id="wrongGuesses"></span></p>
+    </div>
+
+    <script>
+        let words = ["brython", "python", "hangman", "javascript", "programming"];
+        let word = "";
+        let displayedWord = [];
+        let wrongGuesses = [];
+
+        function updateDisplay() {
+            document.getElementById("wordDisplay").textContent = displayedWord.join(" ");
+            document.getElementById("wrongGuesses").textContent = wrongGuesses.join(", ");
+        }
+
+        function startGame() {
+            const customWord = document.getElementById("customWord").value.trim().toLowerCase();
+            word = customWord || words[Math.floor(Math.random() * words.length)];
+            displayedWord = Array(word.length).fill("_");
+            wrongGuesses = [];
+            updateDisplay();
+            document.getElementById("setup").style.display = "none";
+            document.getElementById("game").style.display = "block";
+        }
+
+        function makeGuess() {
+            const guess = document.getElementById("guess").value.toLowerCase();
+            document.getElementById("guess").value = ""; // Clear input
+
+            if (!guess || displayedWord.indexOf(guess) > -1 || wrongGuesses.indexOf(guess) > -1) {
+                return; // Ignore already guessed or empty input
+            }
+
+            if (word.includes(guess)) {
+                word.split('').forEach((c, i) => {
+                    if (c === guess) displayedWord[i] = guess;
+                });
+            } else {
+                wrongGuesses.push(guess);
+            }
+
+            updateDisplay();
+
+            // Check for win or lose
+            if (!displayedWord.includes("_")) {
+                alert("Congratulations! You've guessed the word.");
+                document.getElementById("game").style.display = "none";
+                // Optionally reset or offer restart here
+            } else if (wrongGuesses.length >= 6) { // Set a limit for wrong guesses
+                alert("Game over! The word was: " + word);
+                document.getElementById("game").style.display = "none";
+                // Optionally reset or offer restart here
+            }
+        }
+    </script>
+</body>
+</html>

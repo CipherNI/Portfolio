@@ -2,9 +2,7 @@
 <html>
 <head>
     <title>Hangman Game</title>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.10.2/src/brython.js"></script>
     <style>
-        /* Your CSS styles go here */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f0f0f0;
@@ -40,6 +38,14 @@
         <p>Wrong guesses: <span id="wrongGuesses"></span></p>
     </div>
 
+    <!-- Load Brython -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.10.2/src/brython.js"></script>
+    <!-- Initialize Brython right after loading it -->
+    <script type="text/javascript">
+        brython();
+    </script>
+
+    <!-- Brython Script -->
     <script type="text/python">
         from browser import document
         import random
@@ -69,13 +75,6 @@
 
         document["startGame"].bind("click", start_game)
         document["makeGuess"].bind("click", make_guess)
-    </script>
-
-    <script>
-        // Ensure Brython is initialized after the document has fully loaded
-        document.addEventListener("DOMContentLoaded", function() {
-            brython();
-        });
     </script>
 </body>
 </html>

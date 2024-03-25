@@ -1,115 +1,63 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Stylish Hangman Game</title>
-    <script src="https://cdn.jsdelivr.net/npm/brython@3.10.2/src/brython.js"></script>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            color: #007BFF;
-        }
-
-        input[type="text"] {
-            border: 1px solid #ddd;
-            padding: 10px;
-            width: calc(100% - 24px);
-            margin-bottom: 20px;
-        }
-
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        #wordDisplay {
-            font-size: 24px;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-        }
-
-        #game p, #setup p {
-            margin: 20px 0;
-        }
-    </style>
+    <title>Hangman Game</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.10.2/src/brython.js"></script>
 </head>
 <body onload="brython()">
 
-    <h1>Stylish Hangman Game</h1>
+    <h1>Hangman Game</h1>
     <div id="setup">
         <p>Enter a word for someone else to guess or leave it blank to use a random word:</p>
         <input id="customWord" type="text" placeholder="Enter custom word (optional)" />
-        <button id="startButton">Start Game</button>
+        <button id="startGame">Start Game</button>
     </div>
     <div id="game" style="display:none;">
-        <p>Guess the word by typing a letter in the box below.</p>
-        <p id="wordDisplay">_ _ _ _ _</p>
+        <p>Guess the word by typing a letter in the box below:</p>
         <input id="guess" type="text" maxlength="1" oninput="this.value = this.value.toLowerCase()" />
-        <button onclick="checkLetter()">Guess!</button>
+        <button id="makeGuess">Guess!</button>
+        <p id="wordDisplay">_ _ _ _ _</p>
         <p>Wrong guesses: <span id="wrongGuesses"></span></p>
     </div>
 
     <script type="text/python">
-        from browser import document, window, bind
+        from browser import document, alert
         import random
 
-        word_list = ["brython", "python", "hangman", "programming", "cyberspace"]
+        words = ["brython", "python", "hangman", "programming", "cyberspace"]
         word = ""
         displayed_word = []
         wrong_guesses = []
 
         def update_display():
-            document["wordDisplay"].text = " ".join(displayed_word)
-            document["wrongGuesses"].text = ", ".join(wrong_guesses)
+            document["wordDisplay"].textContent = " ".join(displayed_word)
+            document["wrongGuesses"].textContent = ", ".join(wrong_guesses)
 
-        @bind("#guess", "input")
-        def checkLetter(ev):
-            guess = document["guess"].value
-            document["guess"].value = ""  # Clear input after guess
-            if len(guess) == 0 or not guess.isalpha():
-                return  # Ignore if the input is empty or not a letter
-            
-            if guess in word:
-                for index, letter in enumerate(word):
-                    if letter == guess:
-                        displayed_word[index] = guess
-                update_display()
-            else:
-                if guess not in wrong_guesses:
-                    wrong_guesses.append(guess)
-                    update_display()
-
-        @bind("#startButton", "click")
-        def startGame(ev):
+        def start_game(ev):
             global word, displayed_word, wrong_guesses
-            customWord = document["customWord"].value.strip().lower()
-            if customWord:
-                word = customWord
-            else:
-                word = random.choice(word_list)
+            custom_word = document["customWord"].value.strip().lower()
+            word = custom_word if custom_word else random.choice(words)
             displayed_word = ["_"] * len(word)
             wrong_guesses = []
             update_display()
             document["setup"].style.display = "none"
             document["game"].style.display = "block"
-            document["guess"].focus()  # Focus on the guess input
 
+        def make_guess(ev):
+            guess = document["guess"].value
+            document["guess"].value = ""  # Clear input field
+            if guess in word:
+                for index, letter in enumerate(word):
+                    if letter == guess:
+                        displayed_word[index] = guess
+                update_display()
+            elif guess not in wrong_guesses:
+                wrong_guesses.append(guess)
+                update_display()
+
+        document["startGame"].bind("click", start_game)
+        document["makeGuess"].bind("click", make_guess)
     </script>
 </body>
 </html>

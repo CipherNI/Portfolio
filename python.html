@@ -1,16 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Yolo, World!</title>
+    <title>Hangman Game</title>
     <script src="https://cdn.jsdelivr.net/npm/brython@3.10.2/src/brython.js"></script>
 </head>
 <body onload="brython()">
-    <h1 id="output"></h1>
+
+    <h1>Hangman Game</h1>
+    <p>Guess the word by typing a letter in the box below.</p>
+    <p id="wordDisplay">_ _ _ _ _</p>
+    <input id="guess" type="text" maxlength="1" oninput="this.value = this.value.toLowerCase()" />
+    <button onclick="checkLetter()">Guess!</button>
+    <p>Wrong guesses: <span id="wrongGuesses"></span></p>
 
     <script type="text/python">
-        # Python code executed by Brython
-        message = "Hello, World!"
-        document.getElementById("output").textContent = message
+        from browser import document
+
+        word = "brython"
+        displayed_word = ["_"] * len(word)
+        wrong_guesses = []
+
+        def update_display():
+            document["wordDisplay"].text = " ".join(displayed_word)
+            document["wrongGuesses"].text = ", ".join(wrong_guesses)
+
+        def checkLetter(ev):
+            guess = document["guess"].value
+            if guess in word:
+                for index, letter in enumerate(word):
+                    if letter == guess:
+                        displayed_word[index] = guess
+                update_display()
+            else:
+                if guess not in wrong_guesses:
+                    wrong_guesses.append(guess)
+                    update_display()
+            document["guess"].value = ""  # Clear input after guess
+
+        update_display()
+        document["guess"].bind("input", checkLetter)
     </script>
 </body>
 </html>

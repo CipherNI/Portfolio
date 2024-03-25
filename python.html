@@ -55,7 +55,7 @@
     <div id="setup">
         <p>Enter a word for someone else to guess or leave it blank to use a random word:</p>
         <input id="customWord" type="text" placeholder="Enter custom word (optional)" />
-        <button onclick="startGame()">Start Game</button>
+        <button id="startButton">Start Game</button>
     </div>
     <div id="game" style="display:none;">
         <p>Guess the word by typing a letter in the box below.</p>
@@ -66,7 +66,7 @@
     </div>
 
     <script type="text/python">
-        from browser import document, window
+        from browser import document, window, bind
         import random
 
         word_list = ["brython", "python", "hangman", "programming", "cyberspace"]
@@ -78,8 +78,13 @@
             document["wordDisplay"].text = " ".join(displayed_word)
             document["wrongGuesses"].text = ", ".join(wrong_guesses)
 
+        @bind("#guess", "input")
         def checkLetter(ev):
             guess = document["guess"].value
+            document["guess"].value = ""  # Clear input after guess
+            if len(guess) == 0 or not guess.isalpha():
+                return  # Ignore if the input is empty or not a letter
+            
             if guess in word:
                 for index, letter in enumerate(word):
                     if letter == guess:
@@ -89,8 +94,8 @@
                 if guess not in wrong_guesses:
                     wrong_guesses.append(guess)
                     update_display()
-            document["guess"].value = ""  # Clear input after guess
 
+        @bind("#startButton", "click")
         def startGame(ev):
             global word, displayed_word, wrong_guesses
             customWord = document["customWord"].value.strip().lower()
@@ -103,8 +108,8 @@
             update_display()
             document["setup"].style.display = "none"
             document["game"].style.display = "block"
+            document["guess"].focus()  # Focus on the guess input
 
-        document["guess"].bind("input", checkLetter)
     </script>
 </body>
 </html>

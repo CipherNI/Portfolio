@@ -1,80 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Hangman Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            color: #007BFF;
-        }
-
-        input[type="text"], button {
-            margin: 10px 0;
-        }
+        /* Your CSS styles */
     </style>
 </head>
 <body>
+    <!-- Your HTML content -->
 
-    <h1>Hangman Game</h1>
-    <div id="setup">
-        <p>Enter a word for someone else to guess or leave it blank to use a random word:</p>
-        <input id="customWord" type="text" placeholder="Enter custom word (optional)" />
-        <button id="startGame">Start Game</button>
-    </div>
-    <div id="game" style="display:none;">
-        <p>Guess the word by typing a letter in the box below:</p>
-        <input id="guess" type="text" maxlength="1" oninput="this.value = this.value.toLowerCase()" />
-        <button id="makeGuess">Guess!</button>
-        <p id="wordDisplay">_ _ _ _ _</p>
-        <p>Wrong guesses: <span id="wrongGuesses"></span></p>
-    </div>
-
-    <!-- Load Brython -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.10.2/src/brython.js"></script>
-    <!-- Initialize Brython right after loading it -->
-    <script type="text/javascript">
+    <script>
+    // Dynamically load Brython
+    var script = document.createElement('script');
+    script.onload = function () {
+        // Initialize Brython after it's loaded
         brython();
+    };
+    script.src = "https://cdn.jsdelivr.net/npm/brython@3.10.2/src/brython.js";
+
+    document.head.appendChild(script);
     </script>
 
-    <!-- Brython Script -->
     <script type="text/python">
-        from browser import document
-        import random
-
-        def start_game(ev):
-            global word, displayed_word, wrong_guesses
-            word = document["customWord"].value.strip().lower() or random.choice(["brython", "python", "hangman", "programming", "cyberspace"])
-            displayed_word = ["_"] * len(word)
-            wrong_guesses = []
-            document["wordDisplay"].text = " ".join(displayed_word)
-            document["wrongGuesses"].text = "None"
-            document["setup"].style.display = "none"
-            document["game"].style.display = "block"
-
-        def make_guess(ev):
-            guess = document["guess"].value.lower()
-            if guess and guess in word:
-                for i, letter in enumerate(word):
-                    if letter == guess:
-                        displayed_word[i] = guess
-                document["wordDisplay"].text = " ".join(displayed_word)
-            elif guess and guess not in word:
-                if guess not in wrong_guesses:
-                    wrong_guesses.append(guess)
-                    document["wrongGuesses"].text = ", ".join(wrong_guesses)
-            document["guess"].value = ""  # Clear the guess input field
-
-        document["startGame"].bind("click", start_game)
-        document["makeGuess"].bind("click", make_guess)
+        // Your Brython code
     </script>
 </body>
 </html>

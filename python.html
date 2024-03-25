@@ -3,13 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Stylized Hangman Game</title>
     <style>
-        /* Your CSS styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #007BFF;
+        }
+
+        #setup, #game {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            width: calc(100% - 22px);
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #wordDisplay {
+            font-size: 24px;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        #wrongGuesses {
+            color: #FF0000;
+        }
     </style>
 </head>
 <body>
-    <!-- Your HTML content -->
+
+    <h1>Hangman Game</h1>
+    <div id="setup">
+        <p>Enter a word for someone else to guess or leave it blank to use a random word:</p>
+        <input id="customWord" type="text" placeholder="Enter custom word (optional)" />
+        <button id="startGame">Start Game</button>
+    </div>
+    <div id="game" style="display:none;">
+        <p>Guess the word by typing a letter in the box below:</p>
+        <input id="guess" type="text" maxlength="1" oninput="this.value = this.value.toLowerCase()" />
+        <button id="makeGuess">Guess!</button>
+        <p id="wordDisplay">_ _ _ _ _</p>
+        <p>Wrong guesses: <span id="wrongGuesses"></span></p>
+    </div>
 
     <script>
     // Dynamically load Brython
@@ -19,12 +79,47 @@
         brython();
     };
     script.src = "https://cdn.jsdelivr.net/npm/brython@3.10.2/src/brython.js";
-
     document.head.appendChild(script);
     </script>
 
     <script type="text/python">
-        // Your Brython code
+        from browser import document
+        import random
+
+        words = ["brython", "python", "hangman", "javascript", "programming"]
+        word = ""
+        displayed_word = []
+        wrong_guesses = []
+
+        def update_display():
+            document["wordDisplay"].textContent = " ".join(displayed_word)
+            document["wrongGuesses"].textContent = ", ".join(wrong_guesses) if wrong_guesses else "None"
+
+        def start_game(ev):
+            global word, displayed_word, wrong_guesses
+            custom_word = document["customWord"].value.strip().lower()
+            word = custom_word if custom_word else random.choice(words)
+            displayed_word = ["_"] * len(word)
+            wrong_guesses = []
+            update_display()
+            document["setup"].style.display = "none"
+            document["game"].style.display = "block"
+
+        def make_guess(ev):
+            guess = document["guess"].value.lower()
+            document["guess"].value = ""  # Clear the guess input field
+            if guess in word:
+                for i, letter in enumerate(word):
+                    if letter == guess:
+                        displayed_word[i] = guess
+                update_display()
+            elif guess and guess not in word:
+                if guess not in wrong_guesses:
+                    wrong_guesses.append(guess)
+                    update_display()
+
+        document["startGame"].bind("click", start_game)
+        document["makeGuess"].bind("click", make_guess)
     </script>
 </body>
 </html>

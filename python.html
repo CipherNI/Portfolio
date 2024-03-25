@@ -1,23 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Hangman Game</title>
+    <title>Stylish Hangman Game</title>
     <script src="https://cdn.jsdelivr.net/npm/brython@3.10.2/src/brython.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #007BFF;
+        }
+
+        input[type="text"] {
+            border: 1px solid #ddd;
+            padding: 10px;
+            width: calc(100% - 24px);
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #wordDisplay {
+            font-size: 24px;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        #game p, #setup p {
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body onload="brython()">
 
-    <h1>Hangman Game</h1>
-    <p>Guess the word by typing a letter in the box below.</p>
-    <p id="wordDisplay">_ _ _ _ _</p>
-    <input id="guess" type="text" maxlength="1" oninput="this.value = this.value.toLowerCase()" />
-    <button onclick="checkLetter()">Guess!</button>
-    <p>Wrong guesses: <span id="wrongGuesses"></span></p>
+    <h1>Stylish Hangman Game</h1>
+    <div id="setup">
+        <p>Enter a word for someone else to guess or leave it blank to use a random word:</p>
+        <input id="customWord" type="text" placeholder="Enter custom word (optional)" />
+        <button onclick="startGame()">Start Game</button>
+    </div>
+    <div id="game" style="display:none;">
+        <p>Guess the word by typing a letter in the box below.</p>
+        <p id="wordDisplay">_ _ _ _ _</p>
+        <input id="guess" type="text" maxlength="1" oninput="this.value = this.value.toLowerCase()" />
+        <button onclick="checkLetter()">Guess!</button>
+        <p>Wrong guesses: <span id="wrongGuesses"></span></p>
+    </div>
 
     <script type="text/python">
-        from browser import document
+        from browser import document, window
+        import random
 
-        word = "brython"
-        displayed_word = ["_"] * len(word)
+        word_list = ["brython", "python", "hangman", "programming", "cyberspace"]
+        word = ""
+        displayed_word = []
         wrong_guesses = []
 
         def update_display():
@@ -37,7 +91,19 @@
                     update_display()
             document["guess"].value = ""  # Clear input after guess
 
-        update_display()
+        def startGame(ev):
+            global word, displayed_word, wrong_guesses
+            customWord = document["customWord"].value.strip().lower()
+            if customWord:
+                word = customWord
+            else:
+                word = random.choice(word_list)
+            displayed_word = ["_"] * len(word)
+            wrong_guesses = []
+            update_display()
+            document["setup"].style.display = "none"
+            document["game"].style.display = "block"
+
         document["guess"].bind("input", checkLetter)
     </script>
 </body>

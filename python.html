@@ -2,10 +2,29 @@
 <html>
 <head>
     <title>Hangman Game</title>
-    <link rel="stylesheet" href="style.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.10.2/src/brython.js"></script>
+    <style>
+        /* Your CSS styles go here */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #007BFF;
+        }
+
+        input[type="text"], button {
+            margin: 10px 0;
+        }
+    </style>
 </head>
-<body onload="brython()">
+<body>
 
     <h1>Hangman Game</h1>
     <div id="setup">
@@ -22,42 +41,41 @@
     </div>
 
     <script type="text/python">
-        from browser import document, alert
+        from browser import document
         import random
-
-        words = ["brython", "python", "hangman", "programming", "cyberspace"]
-        word = ""
-        displayed_word = []
-        wrong_guesses = []
-
-        def update_display():
-            document["wordDisplay"].textContent = " ".join(displayed_word)
-            document["wrongGuesses"].textContent = ", ".join(wrong_guesses)
 
         def start_game(ev):
             global word, displayed_word, wrong_guesses
-            custom_word = document["customWord"].value.strip().lower()
-            word = custom_word if custom_word else random.choice(words)
+            word = document["customWord"].value.strip().lower() or random.choice(["brython", "python", "hangman", "programming", "cyberspace"])
             displayed_word = ["_"] * len(word)
             wrong_guesses = []
-            update_display()
+            document["wordDisplay"].text = " ".join(displayed_word)
+            document["wrongGuesses"].text = "None"
             document["setup"].style.display = "none"
             document["game"].style.display = "block"
 
         def make_guess(ev):
-            guess = document["guess"].value
-            document["guess"].value = ""  # Clear input field
-            if guess in word:
-                for index, letter in enumerate(word):
+            guess = document["guess"].value.lower()
+            if guess and guess in word:
+                for i, letter in enumerate(word):
                     if letter == guess:
-                        displayed_word[index] = guess
-                update_display()
-            elif guess not in wrong_guesses:
-                wrong_guesses.append(guess)
-                update_display()
+                        displayed_word[i] = guess
+                document["wordDisplay"].text = " ".join(displayed_word)
+            elif guess and guess not in word:
+                if guess not in wrong_guesses:
+                    wrong_guesses.append(guess)
+                    document["wrongGuesses"].text = ", ".join(wrong_guesses)
+            document["guess"].value = ""  # Clear the guess input field
 
         document["startGame"].bind("click", start_game)
         document["makeGuess"].bind("click", make_guess)
+    </script>
+
+    <script>
+        // Ensure Brython is initialized after the document has fully loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            brython();
+        });
     </script>
 </body>
 </html>

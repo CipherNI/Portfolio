@@ -90,21 +90,21 @@
     <script src="https://cdn.jsdelivr.net/npm/@nlpjs/basic@4.22.1"></script>
     <script src="https://cdn.jsdelivr.net/npm/@nlpjs/lang-en@4.22.1"></script>
     <script>
-        const { NlpManager } = window.nlpjs;
+        let manager;
 
-        const manager = new NlpManager({ languages: ['en'] });
-        manager.addDocument('en', 'Create a network with %d routers and %d switches', 'network.create');
-        manager.addDocument('en', 'Generate a network with %d computers and %d routers', 'network.create');
-        manager.addDocument('en', 'Make a network of %d switches and %d computers', 'network.create');
+        window.onload = async () => {
+            const { NlpManager } = window.nlpjs;
 
-        manager.addAnswer('en', 'network.create', 'Creating a network with {{routers}} routers and {{switches}} switches');
+            manager = new NlpManager({ languages: ['en'] });
+            manager.addDocument('en', 'Create a network with %d routers and %d switches', 'network.create');
+            manager.addDocument('en', 'Generate a network with %d computers and %d routers', 'network.create');
+            manager.addDocument('en', 'Make a network of %d switches and %d computers', 'network.create');
 
-        async function trainNLP() {
+            manager.addAnswer('en', 'network.create', 'Creating a network with {{routers}} routers and {{switches}} switches');
+
             await manager.train();
             manager.save();
-        }
-
-        trainNLP();
+        };
 
         async function sendCommand() {
             const input = document.getElementById('userInput').value;

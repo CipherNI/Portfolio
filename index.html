@@ -1,126 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=
-  , initial-scale=1.0">
-  <link rel="stylesheet" href="css/accueil.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Merriweather:ital,wght@1,300&family=Montserrat:ital,wght@1,300&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="images/infinity.png">
-  <title>CipherNI Portfolio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page personnelle de Nils</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        section {
+            padding: 20px;
+            margin: 10px auto;
+            max-width: 800px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #4CAF50;
+        }
+        .contact {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .contact a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <div class="nav_barre">
-    <ul>
-      <li class="about"><a href="#page-2">About</a></li>
-      <li class="contact"><a href="#page-3">Contact</a></li>
-    </ul>
-  </div>
-  <div class="slide_container">
-    <div class="slide one" class="active" id="page-1">
-      <div class="profil">
-        Network & Security
-        <img src="images/profil.png" width="15%" >
-      </div>
-      <div class="zen"><img src="images/zen.png" width="13%"></div>
-        <div class="un">
-          <div class="container_carre">
-            <div class="carre1">
-              On Premise
-            </div>
-            <div class="carre2">
-              Cloud
-            </div>
-            <div class="carre3">
-              Cisco
-            </div>
-            <div class="carre4">
-              CyberSQ
-            </div>
-            </div>
-            <div class="container_rectangle">
-              <div class="rectangle1">
-                Analyst
+    <header>
+        <h1>Nils - Page Personnelle</h1>
+    </header>
 
-              </div>
-              <div class="rectangle2">
-                Azure
-              </div>
-              <!-- <div class="rectangle3">
-              
-              </div>
-              <div class="rectangle4">
-              <a href="#page-2" id="btn_profil">WORK</a>
-              </div> -->
-              </div>
-   
-      <div class="container_skills">
-        <div class="encoche"><b>SKILLS</b></div>
-        <div class="skills 1"><img id="php" src="images/PHP.png">
-          <div class="content_skills">
-            <img src="images/4etoiles.png">
+    <section id="about">
+        <h2>À propos</h2>
+        <p>Je suis Nils, un jeune diplômé de l'école ESIEE, du cursus "Réseaux et Sécurité". Passionné par les technologies et un petit geek dans l'âme, je suis spécialisé en gestion d'infrastructure, développement et cybersécurité.</p>
+    </section>
 
-          </div>
-        </div>
-        <div class="skills 2"><img src="images/JS.png">
-          <div class="content_skills">
-            <img src="images/3etoiles.png">
-          </div>
-        </div>
-        <div class="skills 3"><img src="images/HTMLCSS.png">
-          <div class="content_skills">
-            <img src="images/5etoiles.png">
-          </div>
-        </div>
-        <div class="skills 4"><img src="images/SQL.png">
-          <div class="content_skills">
-            <img src="images/4etoiles.png">
-          </div>
-        </div>
-        <div class="skills 5"><img src="images/PYTHONC.png">
-          <div class="content_skills">
-            <img src="images/4etoiles.png">
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="slide three" id="page-3">
-      <div class="container_1">
-        <div class="container_cv"><a href="CvDataFr.pdf"><t>CV</t></a></div>
-        <div class="container_about"><t>ABOUT ME</t></div>
-        <div class="container_loca">
-          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d20987.857088589757!2d2.370257571563898!3d48.887148043493255!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66dc8c1efd7e7%3A0x1c0b82c6e1d85220!2s75019%20Paris!5e0!3m2!1sfr!2sfr!4v1667413215000!5m2!1sfr!2sfr"  width="100%" height="100%" border-radius="1.5vw" style="border:0;"allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </div>
-      </div>
-      <div class="container_2">
-         <div class="container_contact">
-           <m>Contactez moi par mail :</m>
-           <form>
-            <input id="nom" type="text" placeholder="Nom:" required>
-            <input id="prenom" type="text" placeholder="Prénom:" required>
-            <input id="mail" type="mail" placeholder="Mail:" required>
-            <textarea id="desc" type="textare" placeholder="Déscription:"required></textarea>
-            <input id="submit" type="submit" >
-           </form>
-           <div class="container_reseaux"
-             <div class="reseaux"><a href="https://www.linkedin.com/in/nils-vu-quoc-khanh-b7a3a71b8/"><img src="https://img.icons8.com/ios/50/000000/linkedin-circled--v1.png" /></a></div>
-            </div>
-         </div>
-      </div>
-    </div>
+    <section id="portfolio">
+        <h2>Portfolio</h2>
+        <h3>Gestion d'infrastructure</h3>
+        <p>Description des compétences et des projets en gestion d'infrastructure.</p>
 
-  <div class="btn_defilement">
-    <ul>
-      <li class="page_1"><a href="#page-1" id="btn_presentation">MY PROFILE</a></li>
-      <li class="page_3"><a href="#page-3" id="btn_about">CONTACT</a></li>
-    </ul>
+        <h3>Développement</h3>
+        <p>Description des compétences et des projets en développement.</p>
 
-  </div>
-</div>
+        <h3>Cybersécurité</h3>
+        <p>Description des compétences et des projets en cybersécurité.</p>
+    </section>
 
+    <section id="contact">
+        <h2>Contact</h2>
+        <p class="contact">
+            Vous pouvez me contacter par email à <a href="mailto:adresse@example.com">adresse@example.com</a>.
+        </p>
+    </section>
 </body>
 </html>

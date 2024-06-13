@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Visualisateur de Réseau</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #00FF00;
+        }
+        header {
+            background-color: #0D0D0D;
+            color: #00FF00;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 0 10px #00FF00;
+        }
+        section {
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 800px;
+            background-color: #1E1E1E;
+            box-shadow: 0 0 10px #00FF00;
+        }
+        h1, h2 {
+            color: #00FF00;
+        }
+        p, h3 {
+            color: #00FF00;
+        }
+        #chatbox {
+            margin: 20px 0;
+            background-color: #2D2D2D;
+            padding: 10px;
+            border: 2px solid #00FF00;
+            box-shadow: 0 0 10px #00FF00;
+        }
+        #visualization {
+            margin: 20px 0;
+            background-color: #2D2D2D;
+            padding: 10px;
+            border: 2px solid #00FF00;
+            box-shadow: 0 0 10px #00FF00;
+        }
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #00FF00;
+            background-color: #121212;
+            color: #00FF00;
+        }
+        input[type="button"] {
+            padding: 10px 20px;
+            border: 1px solid #00FF00;
+            background-color: #121212;
+            color: #00FF00;
+            cursor: pointer;
+        }
+        input[type="button"]:hover {
+            background-color: #00FF00;
+            color: #121212;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Nils - Ingénieur Réseaux et Sécurité</h1>
+    </header>
+
+    <section id="chat">
+        <h2>Chatbot</h2>
+        <div id="chatbox">
+            <p id="chatlog">Bienvenue! Tapez une commande pour générer une topologie de réseau.</p>
+        </div>
+        <input type="text" id="userInput" placeholder="Entrez votre commande ici...">
+        <input type="button" value="Envoyer" onclick="sendCommand()">
+    </section>
+
+    <section id="visualization">
+        <h2>Visualisation de Réseau</h2>
+        <div id="network"></div>
+    </section>
+
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script>
+        function sendCommand() {
+            const input = document.getElementById('userInput').value;
+            document.getElementById('chatlog').innerHTML += '<br>Utilisateur: ' + input;
+            processCommand(input);
+        }
+
+        function processCommand(command) {
+            // Simulation de la génération de la topologie
+            const nodes = [
+                {id: 1, group: 'routeur'},
+                {id: 2, group: 'routeur'},
+                {id: 3, group: 'switch'},
+                {id: 4, group: 'switch'},
+                {id: 5, group: 'ordinateur'},
+                {id: 6, group: 'ordinateur'}
+            ];
+
+            const links = [
+                {source: 1, target: 3},
+                {source: 1, target: 4},
+                {source: 2, target: 4},
+                {source: 3, target: 5},
+                {source: 4, target: 6}
+            ];
+
+            generateNetwork(nodes, links);
+        }
+
+        function generateNetwork(nodes, links) {
+            const svg = d3.select("#network").append("svg")
+                .attr("width", 600)
+                .attr("height", 400);
+
+            const simulation = d3.forceSimulation(nodes)
+                .force("link", d3.forceLink(links).id(d => d.id))
+                .force("charge", d3.forceManyBody())
+                .force("center", d3.forceCenter(300, 200));
+
+            const link = svg.append("g")
+                .attr("class", "links")
+                .selectAll("line")
+                .data(links)
+                .enter().append("line")
+                .attr("stroke-width", 2)
+                .attr("stroke", "#00FF00");
+
+            const node = svg.append("g")
+                .attr("class", "nodes")
+                .selectAll("circle")
+                .data(nodes)
+                .enter().append("circle")
+                .attr("r", 5)
+                .attr("fill", d => d.group === 'routeur' ? 'red' : (d.group === 'switch' ? 'blue' : 'yellow'))
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+
+            node.append("title")
+                .text(d => d.group + ": " + d.id);
+
+            simulation
+                .nodes(nodes)
+                .on("tick", ticked);
+
+            simulation.force("link")
+                .links(links);
+
+            function ticked() {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+
+                node
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y);
+            }
+
+            function dragstarted(event, d) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+
+            function dragged(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            }
+
+            function dragended(event, d) {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+        }
+    </script>
+</body>
+</html>

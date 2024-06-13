@@ -116,8 +116,11 @@
             const response = await manager.process('en', command);
 
             if (response.intent === 'network.create') {
-                const routers = response.entities.find(entity => entity.entity === 'number')?.resolution?.value || 1;
-                const switches = response.entities.slice(1).find(entity => entity.entity === 'number')?.resolution?.value || 1;
+                const routerEntity = response.entities.find(entity => entity.entity === 'number');
+                const routers = routerEntity ? routerEntity.resolution.value : 1;
+
+                const switchEntity = response.entities.slice(1).find(entity => entity.entity === 'number');
+                const switches = switchEntity ? switchEntity.resolution.value : 1;
 
                 const nodes = [];
                 for (let i = 1; i <= routers; i++) {
@@ -133,7 +136,7 @@
                 }
 
                 generateNetwork(nodes, links);
-                document.getElementById('chatlog').innerHTML += `<br>TopoBot: ${response.answer}`;
+                document.getElementById('chatlog').innerHTML += `<br>TopoBot: ${response.answer.replace('{{routers}}', routers).replace('{{switches}}', switches)}`;
             } else {
                 document.getElementById('chatlog').innerHTML += `<br>TopoBot: Sorry, I didn't understand that.`;
             }

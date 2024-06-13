@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -92,153 +90,57 @@
     <script src="https://cdn.jsdelivr.net/npm/@nlpjs/basic@4.22.1"></script>
     <script src="https://cdn.jsdelivr.net/npm/@nlpjs/lang-en@4.22.1"></script>
     <script>
-        
-        function sendCommand() {
+        const { NlpManager } = window.nlpjs;
+
+        const manager = new NlpManager({ languages: ['en'] });
+        manager.addDocument('en', 'Create a network with %d routers and %d switches', 'network.create');
+        manager.addDocument('en', 'Generate a network with %d computers and %d routers', 'network.create');
+        manager.addDocument('en', 'Make a network of %d switches and %d computers', 'network.create');
+
+        manager.addAnswer('en', 'network.create', 'Creating a network with {{routers}} routers and {{switches}} switches');
+
+        async function trainNLP() {
+            await manager.train();
+            manager.save();
+        }
+
+        trainNLP();
+
+        async function sendCommand() {
             const input = document.getElementById('userInput').value;
             document.getElementById('chatlog').innerHTML += '<br>User: ' + input;
-            processCommand(input);
+            await processCommand(input);
         }
 
-        <script>
-    const { NlpManager } = window.nlpjs;
+        async function processCommand(command) {
+            const response = await manager.process('en', command);
 
-    const manager = new NlpManager({ languages: ['en'] });
-    manager.addDocument('en', 'Create a network with %d routers and %d switches', 'network.create');
-    manager.addDocument('en', 'Generate a network with %d computers and %d routers', 'network.create');
-    manager.addDocument('en', 'Make a network of %d switches and %d computers', 'network.create');
+            if (response.intent === 'network.create') {
+                const routers = response.entities.find(entity => entity.entity === 'number')?.resolution?.value || 1;
+                const switches = response.entities.slice(1).find(entity => entity.entity === 'number')?.resolution?.value || 1;
 
-    manager.addAnswer('en', 'network.create', 'Creating a network with {{routers}} routers and {{switches}} switches');
+                const nodes = [];
+                for (let i = 1; i <= routers; i++) {
+                    nodes.push({ id: i, group: 'router' });
+                }
+                for (let i = 1; i <= switches; i++) {
+                    nodes.push({ id: routers + i, group: 'switch' });
+                }
 
-    async function trainNLP() {
-        await manager.train();
-        manager.save();
-    }
+                const links = [];
+                for (let i = 1; i < nodes.length; i++) {
+                    links.push({ source: nodes[i-1].id, target: nodes[i].id });
+                }
 
-    trainNLP();
-
-    async function processCommand(command) {
-        const response = await manager.process('en', command);
-
-        if (response.intent === 'network.create') {
-            const routers = response.entities.find(entity => entity.entity === 'number')?.resolution?.value || 1;
-            const switches = response.entities.slice(1).find(entity => entity.entity === 'number')?.resolution?.value || 1;
-
-            const nodes = [];
-            for (let i = 1; i <= routers; i++) {
-                nodes.push({ id: i, group: 'router' });
+                generateNetwork(nodes, links);
+                document.getElementById('chatlog').innerHTML += `<br>TopoBot: ${response.answer}`;
+            } else {
+                document.getElementById('chatlog').innerHTML += `<br>TopoBot: Sorry, I didn't understand that.`;
             }
-            for (let i = 1; i <= switches; i++) {
-                nodes.push({ id: routers + i, group: 'switch' });
-            }
-
-            const links = [];
-            for (let i = 1; i < nodes.length; i++) {
-                links.push({ source: nodes[i-1].id, target: nodes[i].id });
-            }
-
-            generateNetwork(nodes, links);
-            document.getElementById('chatlog').innerHTML += `<br>TopoBot: ${response.answer}`;
-        } else {
-            document.getElementById('chatlog').innerHTML += `<br>TopoBot: Sorry, I didn't understand that.`;
-        }
-    }
-
-    function generateNetwork(nodes, links) {
-        d3.select("#network").html("");
-        const svg = d3.select("#network").append("svg")
-            .attr("width", 600)
-            .attr("height", 400);
-
-        const simulation = d3.forceSimulation(nodes)
-            .force("link", d3.forceLink(links).id(d => d.id))
-            .force("charge", d3.forceManyBody())
-            .force("center", d3.forceCenter(300, 200));
-
-        const link = svg.append("g")
-            .attr("class", "links")
-            .selectAll("line")
-            .data(links)
-            .enter().append("line")
-            .attr("stroke-width", 2)
-            .attr("stroke", "#00FF00");
-
-        const node = svg.append("g")
-            .attr("class", "nodes")
-            .selectAll("circle")
-            .data(nodes)
-            .enter().append("circle")
-            .attr("r", 5)
-            .attr("fill", d => d.group === 'router' ? 'red' : (d.group === 'switch' ? 'blue' : 'yellow'))
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
-
-        node.append("title")
-            .text(d => d.group + ": " + d.id);
-
-        simulation
-            .nodes(nodes)
-            .on("tick", ticked);
-
-        simulation.force("link")
-            .links(links);
-
-        function ticked() {
-            link
-                .attr("x1", d => d.source.x)
-                .attr("y1", d => d.source.y)
-                .attr("x2", d => d.target.x)
-                .attr("y2", d => d.target.y);
-
-            node
-                .attr("cx", d => d.x)
-                .attr("cy", d => d.y);
-        }
-
-        function dragstarted(event, d) {
-            if (!event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-        }
-
-        function dragged(event, d) {
-            d.fx = event.x;
-            d.fy = event.y;
-        }
-
-        function dragended(event, d) {
-            if (!event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-        }
-    }
-</script>
-
-
-        function processCommand(command) {
-            // Simulate generating the network topology
-            const nodes = [
-                {id: 1, group: 'router'},
-                {id: 2, group: 'router'},
-                {id: 3, group: 'switch'},
-                {id: 4, group: 'switch'},
-                {id: 5, group: 'computer'},
-                {id: 6, group: 'computer'}
-            ];
-
-            const links = [
-                {source: 1, target: 3},
-                {source: 1, target: 4},
-                {source: 2, target: 4},
-                {source: 3, target: 5},
-                {source: 4, target: 6}
-            ];
-
-            generateNetwork(nodes, links);
         }
 
         function generateNetwork(nodes, links) {
+            d3.select("#network").html("");
             const svg = d3.select("#network").append("svg")
                 .attr("width", 600)
                 .attr("height", 400);

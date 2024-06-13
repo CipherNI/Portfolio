@@ -116,11 +116,9 @@
             const response = await manager.process('en', command);
 
             if (response.intent === 'network.create') {
-                const routerEntity = response.entities.find(entity => entity.entity === 'number');
-                const routers = routerEntity ? routerEntity.resolution.value : 1;
-
-                const switchEntity = response.entities.slice(1).find(entity => entity.entity === 'number');
-                const switches = switchEntity ? switchEntity.resolution.value : 1;
+                const entities = response.entities.map(entity => entity.resolution.value);
+                const routers = entities[0] || 1;
+                const switches = entities[1] || 1;
 
                 const nodes = [];
                 for (let i = 1; i <= routers; i++) {

@@ -19,17 +19,25 @@
         canvas {
             border: 1px solid white;
         }
-        #game-over {
+        .overlay {
             display: none;
             text-align: center;
             font-size: 24px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <div id="game-over">
+    <div id="game-over" class="overlay">
         <p>Game Over</p>
+        <button onclick="restartGame()">Restart</button>
+    </div>
+    <div id="game-won" class="overlay">
+        <p>Victory!</p>
         <button onclick="restartGame()">Restart</button>
     </div>
 
@@ -46,6 +54,7 @@
         const bulletWidth = 5;
         const bulletHeight = 10;
         const bulletSpeed = 7;
+        const bulletLimit = 1;
         let bullets = [];
 
         const enemyWidth = 40;
@@ -58,6 +67,7 @@
         const numCols = 10;
 
         let gameOver = false;
+        let gameWon = false;
 
         function createEnemies() {
             enemies = [];
@@ -151,11 +161,21 @@
                     gameOver = true;
                 }
             });
+
+            if (enemies.length === 0) {
+                gameWon = true;
+            }
         }
 
         function update() {
             if (gameOver) {
                 document.getElementById('game-over').style.display = 'block';
+                canvas.style.display = 'none';
+                return;
+            }
+
+            if (gameWon) {
+                document.getElementById('game-won').style.display = 'block';
                 canvas.style.display = 'none';
                 return;
             }
@@ -173,7 +193,9 @@
 
         function restartGame() {
             gameOver = false;
+            gameWon = false;
             document.getElementById('game-over').style.display = 'none';
+            document.getElementById('game-won').style.display = 'none';
             canvas.style.display = 'block';
             playerX = (canvas.width - playerWidth) / 2;
             playerY = canvas.height - playerHeight - 10;
@@ -185,7 +207,7 @@
         const keys = {};
         window.addEventListener('keydown', (e) => {
             keys[e.key] = true;
-            if (e.key === ' ') {
+            if (e.key === ' ' && bullets.length < bulletLimit) {
                 bullets.push({
                     x: playerX + playerWidth / 2 - bulletWidth / 2,
                     y: playerY,

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Invader</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            border: 1px solid white;
+        }
+        #game-over {
+            display: none;
+            text-align: center;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="game-over">
+        <p>Game Over</p>
+        <button onclick="restartGame()">Restart</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const playerWidth = 50;
+        const playerHeight = 20;
+        const playerSpeed = 5;
+        let playerX = (canvas.width - playerWidth) / 2;
+        let playerY = canvas.height - playerHeight - 10;
+
+        const bulletWidth = 5;
+        const bulletHeight = 10;
+        const bulletSpeed = 7;
+        let bullets = [];
+
+        const enemyWidth = 40;
+        const enemyHeight = 20;
+        const enemySpeed = 2;
+        let enemies = [];
+        let enemyDirection = 1;
+
+        const numRows = 5;
+        const numCols = 10;
+
+        let gameOver = false;
+
+        function createEnemies() {
+            enemies = [];
+            for (let row = 0; row < numRows; row++) {
+                for (let col = 0; col < numCols; col++) {
+                    enemies.push({
+                        x: col * (enemyWidth + 10) + 30,
+                        y: row * (enemyHeight + 10) + 30,
+                        width: enemyWidth,
+                        height: enemyHeight
+                    });
+                }
+            }
+        }
+
+        function drawPlayer() {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(playerX, playerY, playerWidth, playerHeight);
+        }
+
+        function drawBullets() {
+            ctx.fillStyle = 'red';
+            bullets.forEach(bullet => {
+                ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
+            });
+        }
+
+        function drawEnemies() {
+            ctx.fillStyle = 'green';
+            enemies.forEach(enemy => {
+                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+            });
+        }
+
+        function movePlayer() {
+            if (keys['ArrowLeft'] && playerX > 0) {
+                playerX -= playerSpeed;
+            }
+            if (keys['ArrowRight'] && playerX < canvas.width - playerWidth) {
+                playerX += playerSpeed;
+            }
+        }
+
+        function moveBullets() {
+            bullets.forEach((bullet, index) => {
+                bullet.y -= bulletSpeed;
+                if (bullet.y < 0) {
+                    bullets.splice(index, 1);
+                }
+            });
+        }
+
+        function moveEnemies() {
+            const leftMost = enemies[0];
+            const rightMost = enemies[enemies.length - 1];
+
+            if (leftMost.x <= 0 || rightMost.x + enemyWidth >= canvas.width) {
+                enemyDirection *= -1;
+                enemies.forEach(enemy => {
+                    enemy.y += enemyHeight;
+                });
+            }
+
+            enemies.forEach(enemy => {
+                enemy.x += enemySpeed * enemyDirection;
+            });
+        }
+
+        function detectCollisions() {
+            bullets.forEach((bullet, bulletIndex) => {
+                enemies.forEach((enemy, enemyIndex) => {
+                    if (
+                        bullet.x < enemy.x + enemy.width &&
+                        bullet.x + bulletWidth > enemy.x &&
+                        bullet.y < enemy.y + enemy.height &&
+                        bullet.y + bulletHeight > enemy.y
+                    ) {
+                        bullets.splice(bulletIndex, 1);
+                        enemies.splice(enemyIndex, 1);
+                    }
+                });
+            });
+
+            enemies.forEach(enemy => {
+                if (
+                    enemy.x < playerX + playerWidth &&
+                    enemy.x + enemy.width > playerX &&
+                    enemy.y < playerY + playerHeight &&
+                    enemy.y + enemy.height > playerY
+                ) {
+                    gameOver = true;
+                }
+            });
+        }
+
+        function update() {
+            if (gameOver) {
+                document.getElementById('game-over').style.display = 'block';
+                canvas.style.display = 'none';
+                return;
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            movePlayer();
+            moveBullets();
+            moveEnemies();
+            detectCollisions();
+            drawPlayer();
+            drawBullets();
+            drawEnemies();
+            requestAnimationFrame(update);
+        }
+
+        function restartGame() {
+            gameOver = false;
+            document.getElementById('game-over').style.display = 'none';
+            canvas.style.display = 'block';
+            playerX = (canvas.width - playerWidth) / 2;
+            playerY = canvas.height - playerHeight - 10;
+            bullets = [];
+            createEnemies();
+            update();
+        }
+
+        const keys = {};
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (e.key === ' ') {
+                bullets.push({
+                    x: playerX + playerWidth / 2 - bulletWidth / 2,
+                    y: playerY,
+                    width: bulletWidth,
+                    height: bulletHeight
+                });
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        createEnemies();
+        update();
+    </script>
+</body>
+</html>
